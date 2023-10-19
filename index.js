@@ -7,8 +7,7 @@ const port = process.env.PORT || 5000;
 
 // Use middleware
 app.use(cors());
-app.use(express.json())
-
+app.use(express.json());
 
 
 
@@ -29,18 +28,44 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
+
+        const productCollection = client.db("carCollection").collection("car")
+
+
+        // Post the data into the database
+        app.post("/products", async(req, res) => {
+            const newProduct = req.body;
+            const result = await productCollection.insertOne(newProduct);
+            res.send(result)
+        })
+
+
+
+
+        // Connect and accesss database
+        const coffeeCollection = client.db('coffeeDB').collection('coffeeCollection')
+
+
+        // Post data to server and database
+        app.post("/coffee", async(req, res) => {
+            const newCoffee = req.body;
+            console.log(newCoffee);
+            const result = await coffeeCollection.insertOne(newCoffee);
+            res.send(result);
+        })
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
+    }
+
+    finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
     }
 }
 run().catch(console.dir);
-
-
-
 
 
 
